@@ -143,9 +143,19 @@ Path::PathType Path::getPath(const State& state, const Position& start, const st
 
 
 Direction Path::getDirection(const Position& pos1, const Position& pos2) {
-    Direction result;
+    Direction result = Direction::STAY;
 
-    result = Direction::STAY; // TODO: implement this
+    if(pos2.x > pos1.x) {
+        result = Direction::EAST;
+    } else if(pos2.x < pos1.x) {
+        result = Direction::WEST;
+    } else {
+        if(pos2.y > pos1.y) {
+            result = Direction::NORTH;
+        } else if(pos2.y < pos1.y) {
+            result = Direction::SOUTH;
+        }
+    }
 
     return result;
 }

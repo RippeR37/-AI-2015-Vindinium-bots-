@@ -48,6 +48,7 @@ namespace Graph {
 
                     if(current->position == goal.position) {
                         // Goal found, recreating path from 'goal' node to 'start' node
+                        resultPath.push_front(current->position);
                         auto pathCurrent = came_from.find(*current);
                         if(pathCurrent != came_from.end()) {
                             while(pathCurrent->second.position != start.position) {

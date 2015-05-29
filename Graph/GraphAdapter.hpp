@@ -20,7 +20,7 @@ namespace Graph {
 
 
         public:
-            GraphAdapter(GraphType& graph) : _graph(graph) {
+            GraphAdapter(const GraphType& graph) : _graph(graph) {
             
             }
 
@@ -45,7 +45,7 @@ namespace Graph {
             }
 
         protected:
-            GraphType& _graph;
+            const GraphType& _graph;
     };
 
 }

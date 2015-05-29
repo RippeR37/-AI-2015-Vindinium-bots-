@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game.h"
+#include "SimpleStrategy.h"
 
 struct Bot
 {
@@ -18,6 +19,7 @@ struct Bot
 private:
 
     Rng& rng;
+    mutable SimpleStrategy strategy;
 
 };
 

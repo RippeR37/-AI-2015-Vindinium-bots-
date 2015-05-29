@@ -1,7 +1,7 @@
 #include "SimpleStrategy.h"
 #include "Path.h"
 
-SimpleStrategy::SimpleStrategy(Game& game) : Strategy(game) {
+SimpleStrategy::SimpleStrategy(const Game& game) : Strategy(game) {
     int heroNumber = _game.state.next_hero_index;
     Tile playerMine;
 
@@ -22,6 +22,9 @@ SimpleStrategy::SimpleStrategy(Game& game) : Strategy(game) {
 
 Direction SimpleStrategy::getMove() {
     int heroNumber = _game.state.next_hero_index;
+
+    return Path::getDirection(_game.state.heroes[heroNumber].position, Path::getPath(_game.state, _game.state.heroes[heroNumber].position, _game.state.heroes[(heroNumber+1)%4].position).front());
+
     Path::PathType path = Path::getPath(_game.state, _game.state.heroes[heroNumber].position, _goal);
 
     if(path.size() == 0) {

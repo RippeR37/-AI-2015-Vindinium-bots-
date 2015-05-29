@@ -5,9 +5,9 @@
 
 class Strategy {
     public:
-        Strategy(Game& game);
+        Strategy(const Game& game);
         virtual Direction getMove() = 0;
     protected:
-        Game& _game;
+        const Game& _game;
 };
 

@@ -1,5 +1,5 @@
 #include "Strategy.h"
 
-Strategy::Strategy(Game& game) : _game(game) {
+Strategy::Strategy(const Game& game) : _game(game) {
 }
 

@@ -6,7 +6,7 @@
 
 class SimpleStrategy : public Strategy {
     public:
-        SimpleStrategy(Game& game);
+        SimpleStrategy(const Game& game);
         Direction getMove();
     private:
         void _newGoal();

@@ -145,15 +145,16 @@ Path::PathType Path::getPath(const State& state, const Position& start, const st
 Direction Path::getDirection(const Position& pos1, const Position& pos2) {
     Direction result = Direction::STAY;
 
+    // Be advised - game uses bed signatures for x/y and EW/SN, so it may not look logical here
     if(pos2.x > pos1.x) {
-        result = Direction::EAST;
+        result = Direction::SOUTH;
     } else if(pos2.x < pos1.x) {
-        result = Direction::WEST;
+        result = Direction::NORTH;
     } else {
         if(pos2.y > pos1.y) {
-            result = Direction::NORTH;
+            result = Direction::EAST;
         } else if(pos2.y < pos1.y) {
-            result = Direction::SOUTH;
+            result = Direction::WEST;
         }
     }
 

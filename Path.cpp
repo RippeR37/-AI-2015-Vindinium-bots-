@@ -28,7 +28,20 @@ class SimpleMapAdapter : public BaseGraphAdapter {
         std::vector<NodeAdapterType> getNeighboursOf(const NodeAdapterType& node) const {
             std::vector<NodeAdapterType> neighbours;
 
-            // TODO: implement this;
+            std::vector<std::pair<int, int>> posDiffs = {
+                {  0, -1 }, {  0,  1 }, { -1,  0 }, {  1,  0 }
+            };
+
+            for(const std::pair<int, int>& posDiff : posDiffs) {
+                neighbours.push_back(
+                    NodeAdapterType(
+                        Position(
+                            node.position.x + posDiff.first,
+                            node.position.y + posDiff.second
+                        )
+                    )
+                );
+            }
 
             return neighbours;
         }

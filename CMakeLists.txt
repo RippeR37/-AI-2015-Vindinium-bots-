@@ -7,6 +7,8 @@ set(USE_OPENMP true CACHE BOOL "Use OpenMP")
 
 set(ADDITIONAL_LIBS "curl")
 
+set(CMAKE_CXX_FLAGS "-std=c++11") # GCC flags
+
 find_package(OpenMP)
 if(USE_OPENMP)
 	if(OPENMP_FOUND)
@@ -46,6 +48,7 @@ foreach(bot_header ${bot_headers})
         network.cpp
         tiles.cpp
         client.cpp
+        Path.cpp
         )
 
     set_target_properties(${bot_bin}

@@ -47,6 +47,9 @@ struct State
     Tile
     get_tile_from_background_border_check(const Position& position) const;
 
+    Tiles
+    get_tiles_full() const;
+
     Heroes heroes;
 
     int next_hero_index;
@@ -55,9 +58,6 @@ private:
 
     Tile
     process_background_tile(const Tile& tile, const Position& position) const;
-
-    Tiles
-    get_tiles_full() const;
 
     void
     chain_respawn(const int& killed_hero_index, const int& killer_hero_index);

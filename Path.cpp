@@ -1,7 +1,7 @@
 #include "Path.h"
 
 
-Path::PathType Path::getPath(const Tiles& tiles, const Position& start, const Position& end) {
+Path::PathType Path::getPath(const State& state, const Position& start, const Position& end) {
     PathType result;
 
     // TODO: implement this
@@ -10,16 +10,16 @@ Path::PathType Path::getPath(const Tiles& tiles, const Position& start, const Po
 }
 
 
-Path::PathType Path::getPath(const Tiles& tiles, const Position& start, Tile tileType) {
+Path::PathType Path::getPath(const State& state, const Position& start, Tile tileType) {
     PathType result;
 
-    result = getPath(tiles, start, { tileType });
+    result = getPath(state, start, { tileType });
 
     return result;
 }
 
 
-Path::PathType Path::getPath(const Tiles& tiles, const Position& start, const std::initializer_list<Tile>& tileTypes) {
+Path::PathType Path::getPath(const State& state, const Position& start, const std::initializer_list<Tile>& tileTypes) {
     PathType result;
 
     // TODO: implement this

@@ -49,6 +49,8 @@ foreach(bot_header ${bot_headers})
         tiles.cpp
         client.cpp
         Path.cpp
+        Strategy.cpp
+        SimpleStrategy.cpp
         )
 
     set_target_properties(${bot_bin}

@@ -23,7 +23,7 @@ SimpleStrategy::SimpleStrategy(const Game& game) : Strategy(game) {
 Direction SimpleStrategy::getMove() {
     int heroNumber = _game.state.next_hero_index;
 
-    return Path::getDirection(_game.state.heroes[heroNumber].position, Path::getPath(_game.state, _game.state.heroes[heroNumber].position, _game.state.heroes[(heroNumber+1)%4].position).front());
+    //return Path::getDirection(_game.state.heroes[heroNumber].position, Path::getPath(_game.state, _game.state.heroes[heroNumber].position, _game.state.heroes[(heroNumber+1)%4].position).front());
 
     Path::PathType path = Path::getPath(_game.state, _game.state.heroes[heroNumber].position, _goal);
 

@@ -60,20 +60,27 @@ class SimpleMapAdapter : public BaseGraphAdapter {
 
 };
 
-/*** Simple A* graph adapter for getPath(state, start, end) method ***/
+/*** Advanced A* graph adapter for getPath(state, start, tileTypes) method ***/
 class AdvancedMapAdapter : public BaseGraphAdapter {
     public:
-        AdvancedMapAdapter(const State& state) : BaseGraphAdapter(state) {
+        AdvancedMapAdapter(const State& state, const std::vector<Tile>& tileTypes) : BaseGraphAdapter(state), _tileTypes(tileTypes) {
 
         }
 
         bool isAvailable(const Position& position) const {
             bool isAvailable = false;
+            Tile tileOnPosition;
 
-            if(_graph.get_tile_from_background_border_check(position) == Tile::EMPTY)
+            tileOnPosition = _graph.get_tile_from_background_border_check(position);
+            if(tileOnPosition == Tile::EMPTY)
                 isAvailable = true;
 
-            // TODO: fix this - it should return true if above function returns tile from any of accepted type!
+            for(unsigned int i = 0; i < _tileTypes.size(); ++i) {
+                if(tileOnPosition == _tileTypes[i]) {
+                    isAvailable = true;
+                    break;
+                }
+            }
 
             return isAvailable;
         }
@@ -99,11 +106,17 @@ class AdvancedMapAdapter : public BaseGraphAdapter {
             return neighbours;
         }
 
-        int getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& goal) const {
+        int getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& currentNodeCpy) const {
             // TODO: implement this
+            // Calculate closest possible distance to any node with type from _tileTypes;
+            // This would mean to find all objects with this type, store references to them and for each query
+            // check manhattan/euclidian distance to each of them and return smallest computed value
 
             return 0;
         }
+
+    private:
+        const std::vector<Tile>& _tileTypes;
 };
 
 
@@ -132,11 +145,25 @@ Path::PathType Path::getPath(const State& state, const Position& start, Tile til
 Path::PathType Path::getPath(const State& state, const Position& start, const std::vector<Tile>& tileTypes) {
     PathType result;
     Graph::AStar<State, Position, int> myAStar;
-    AdvancedMapAdapter myMapAdapter(state);
+    AdvancedMapAdapter myMapAdapter(state, tileTypes);
     AdvancedMapAdapter::NodeAdapterType nodeStart(start);
-    //SimpleMapAdapter::NodeAdapterType nodeGoal(end); // TODO: fix this
 
-    //result = myAStar.getPath(myMapAdapter, nodeStart, nodeGoal);
+    std::function<bool(const AdvancedMapAdapter::NodeAdapterType&)> endCondition = [&](const AdvancedMapAdapter::NodeAdapterType& currentNode) -> bool {
+        bool isGoal = false;
+        Tile tileType;
+
+        tileType = state.get_tile_from_background_border_check(currentNode.position);
+        for(unsigned int i = 0; i < tileTypes.size(); ++i) {
+            if(tileTypes[i] == tileType) {
+                isGoal = true;
+                break;
+            }
+        }
+
+        return isGoal;
+    };
+
+    result = myAStar.getPath(myMapAdapter, nodeStart, endCondition);
 
     return result;
 }

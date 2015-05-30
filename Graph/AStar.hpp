@@ -71,22 +71,24 @@ namespace Graph {
                             if(cIter != closed.end()) {
                                 continue;
                             }
-
-                            CostType hypotheticalNeighbourCostG = current->g() + 1;
+                            
+                            neighbour.g(current->g() + 1);
+                            neighbour.h(graphAdapter.getHeuristicCostLeft(neighbour, goal));
 
                             oIter = open.find(neighbour);
-                            if(oIter == open.end() || hypotheticalNeighbourCostG < oIter->g()) {
+                            if(oIter == open.end() || neighbour.g() < oIter->g()) {
                                 if(oIter != open.end()) {
                                     open.erase(oIter);
                                 }
 
                                 auto cameFromIter = came_from.find(neighbour);
-                                if(cameFromIter != came_from.end())
-                                    came_from.erase(cameFromIter);
+                                if(cameFromIter != came_from.end()) {
+                                    if(cameFromIter->second.g() > neighbour.g()) {
+                                        came_from.erase(cameFromIter);
+                                    }
+                                }
                                 came_from.emplace(std::pair<NodeAdapterType, NodeAdapterType>(neighbour, *current));
 
-                                neighbour.g(hypotheticalNeighbourCostG);
-                                neighbour.h(graphAdapter.getHeuristicCostLeft(neighbour, goal));
                                 open.insert(neighbour);
                             }
                         }

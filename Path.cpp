@@ -5,7 +5,7 @@
 #include <climits>
 
 /*** Typedefs ***/
-typedef Graph::GraphAdapter<State, Position, int> BaseGraphAdapter;
+typedef Graph::GraphAdapter<State, Position, double> BaseGraphAdapter;
 
 /*** Simple A* graph adapter for getPath(state, start, end) method ***/
 class SimpleMapAdapter : public BaseGraphAdapter {
@@ -46,13 +46,13 @@ class SimpleMapAdapter : public BaseGraphAdapter {
             return neighbours;
         }
 
-        virtual int getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& goal) const {
-            int dx, dy;
+        virtual double getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& goal) const {
+            double dx, dy;
 
-            dx = std::abs(currentNode.position.x - goal.position.x);
-            dy = std::abs(currentNode.position.y - goal.position.y);
+            dx = currentNode.position.x - goal.position.x;
+            dy = currentNode.position.y - goal.position.y;
 
-            return dx + dy;
+            return std::sqrt(dx*dx + dy*dy);
         }
 
     private:
@@ -106,14 +106,14 @@ class AdvancedMapAdapter : public BaseGraphAdapter {
             return neighbours;
         }
 
-        int getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& currentNodeCpy) const {
+        double getHeuristicCostLeft(const NodeAdapterType& currentNode, const NodeAdapterType& currentNodeCpy) const {
             static std::vector<PositionType> tavernPositions = _getTavernPositions();
             static std::vector<PositionType> minesPositions = _getMinesPositions();
 
-            int result = INT_MAX;
+            double result = INT_MAX;
             PositionType position;
             PositionType currentPosition = currentNode.position;
-            int distance, diffx, diffy;
+            double distance, diffx, diffy;
 
             for(Tile t: _tileTypes) {
                 switch(t) {
@@ -242,7 +242,7 @@ class AdvancedMapAdapter : public BaseGraphAdapter {
 
 Path::PathType Path::getPath(const State& state, const Position& start, const Position& end) {
     PathType result;
-    Graph::AStar<State, Position, int> myAStar;
+    Graph::AStar<State, Position, double> myAStar;
     SimpleMapAdapter myMapAdapter(state, end);
     SimpleMapAdapter::NodeAdapterType nodeStart(start);
     SimpleMapAdapter::NodeAdapterType nodeGoal(end);
@@ -255,8 +255,10 @@ Path::PathType Path::getPath(const State& state, const Position& start, const Po
 
 Path::PathType Path::getPath(const State& state, const Position& start, Tile tileType) {
     PathType result;
+    std::vector<Tile> tileTypes;
+    tileTypes.push_back(tileType);
 
-    result = getPath(state, start, { tileType });
+    result = getPath(state, start, tileTypes);
 
     return result;
 }
@@ -264,7 +266,7 @@ Path::PathType Path::getPath(const State& state, const Position& start, Tile til
 
 Path::PathType Path::getPath(const State& state, const Position& start, const std::vector<Tile>& tileTypes) {
     PathType result;
-    Graph::AStar<State, Position, int> myAStar;
+    Graph::AStar<State, Position, double> myAStar;
     AdvancedMapAdapter myMapAdapter(state, tileTypes);
     AdvancedMapAdapter::NodeAdapterType nodeStart(start);
 

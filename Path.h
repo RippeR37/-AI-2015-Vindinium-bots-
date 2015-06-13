@@ -15,6 +15,7 @@ class Path {
         static PathType getPath(const State& tiles, const Position& start, const Position& end);
         static PathType getPath(const State& tiles, const Position& start, Tile tileType);
         static PathType getPath(const State& tiles, const Position& start, const std::vector<Tile>& tileTypes);
+        static PathType getPath(const State& tiles, const Position& start, const std::vector<Tile>& goalTypes, const std::vector<Tile>& avoidTypes);
 
         static Direction getDirection(const Position& pos1, const Position& pos2);
 

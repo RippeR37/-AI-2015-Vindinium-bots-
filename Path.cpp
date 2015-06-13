@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <climits>
+#include <algorithm>
 
 /*** Typedefs ***/
 typedef Graph::GraphAdapter<State, Position, double> BaseGraphAdapter;
@@ -63,7 +64,8 @@ class SimpleMapAdapter : public BaseGraphAdapter {
 /*** Advanced A* graph adapter for getPath(state, start, tileTypes) method ***/
 class AdvancedMapAdapter : public BaseGraphAdapter {
     public:
-        AdvancedMapAdapter(const State& state, const std::vector<Tile>& tileTypes) : BaseGraphAdapter(state), _tileTypes(tileTypes) {
+        AdvancedMapAdapter(const State& state, const std::vector<Tile>& goalTypes, const std::vector<Tile>& avoidTypes)
+                : BaseGraphAdapter(state), _tileTypes(goalTypes), _avoidTypes(avoidTypes) {
 
         }
 
@@ -203,8 +205,123 @@ class AdvancedMapAdapter : public BaseGraphAdapter {
                 }
             }
 
+            result = getCostWithAvoidance(currentNode, result);
+
             return ( (result == INT_MAX) ? 0 : result );
         }
+
+        double getCostWithAvoidance(const NodeAdapterType& currentNode, double oldResult) const {
+            static std::vector<PositionType> tavernPositions = _getTavernPositions();
+            static std::vector<PositionType> minesPositions = _getMinesPositions();
+
+            double newResult = oldResult;
+            PositionType position;
+            PositionType currentPosition = currentNode.position;
+            int diffx, diffy;
+
+            int maxDXDY = 2;
+
+            for(Tile t: _avoidTypes) {
+                switch(t) {
+                    case HERO1:
+                        position = _graph.heroes[0].position;
+                        diffx = std::abs(currentPosition.x - position.x);
+                        diffy = std::abs(currentPosition.y - position.y);
+                        if(diffx + diffy <= maxDXDY) {
+                            newResult = oldResult + 99999.0;
+                        }
+                        break;
+                    case HERO2:
+                        position = _graph.heroes[1].position;
+                        diffx = std::abs(currentPosition.x - position.x);
+                        diffy = std::abs(currentPosition.y - position.y);
+                        if(diffx + diffy <= maxDXDY) {
+                            newResult = oldResult + 99999.0;
+                        }
+                        break;
+                    case HERO3:
+                        position = _graph.heroes[2].position;
+                        diffx = std::abs(currentPosition.x - position.x);
+                        diffy = std::abs(currentPosition.y - position.y);
+                        if(diffx + diffy <= maxDXDY) {
+                            newResult = oldResult + 99999.0;
+                        }
+                        break;
+                    case HERO4:
+                        position = _graph.heroes[3].position;
+                        diffx = std::abs(currentPosition.x - position.x);
+                        diffy = std::abs(currentPosition.y - position.y);
+                        if(diffx + diffy <= maxDXDY) {
+                            newResult = oldResult + 99999.0;
+                        }
+                        break;
+                    case TAVERN:
+                        for(PositionType pos: tavernPositions) {
+                            diffx = std::abs(currentPosition.x - pos.x);
+                            diffy = std::abs(currentPosition.y - pos.y);
+                            if(diffx + diffy <= maxDXDY) {
+                                newResult = oldResult + 99999.0;
+                            }
+                        }
+                        break;
+                    case MINE:
+                        for(PositionType pos: minesPositions) {
+                            bool owned = false;
+                            for(int i = 0; i < 4; ++i) {
+                                owned = (owned || (_graph.heroes[i].mine_positions.find(pos) != _graph.heroes[i].mine_positions.end()));
+                            }
+                            if(!owned) {
+                                diffx = std::abs(currentPosition.x - pos.x);
+                                diffy = std::abs(currentPosition.y - pos.y);
+                                if(diffx + diffy <= maxDXDY) {
+                                    newResult = oldResult + 99999.0;
+                                }
+                            }
+                        }
+                        break;
+                    case MINE1:
+                        for(PositionType pos: _graph.heroes[0].mine_positions) {
+                            diffx = std::abs(currentPosition.x - pos.x);
+                            diffy = std::abs(currentPosition.y - pos.y);
+                            if(diffx + diffy <= maxDXDY) {
+                                newResult = oldResult + 99999.0;
+                            }
+                        }
+                        break;
+                    case MINE2:
+                        for(PositionType pos: _graph.heroes[1].mine_positions) {
+                            diffx = std::abs(currentPosition.x - pos.x);
+                            diffy = std::abs(currentPosition.y - pos.y);
+                            if(diffx + diffy <= maxDXDY) {
+                                newResult = oldResult + 99999.0;
+                            }
+                        }
+                        break;
+                    case MINE3:
+                        for(PositionType pos: _graph.heroes[2].mine_positions) {
+                            diffx = std::abs(currentPosition.x - pos.x);
+                            diffy = std::abs(currentPosition.y - pos.y);
+                            if(diffx + diffy <= maxDXDY) {
+                                newResult = oldResult + 99999.0;
+                            }
+                        }
+                        break;
+                    case MINE4:
+                        for(PositionType pos: _graph.heroes[3].mine_positions) {
+                            diffx = std::abs(currentPosition.x - pos.x);
+                            diffy = std::abs(currentPosition.y - pos.y);
+                            if(diffx + diffy <= maxDXDY) {
+                                newResult = oldResult + 99999.0;
+                            }
+                        }
+                        break;
+                    default: break;
+                }
+            }
+
+            return newResult;
+        }
+
 
     private:
         std::vector<PositionType> _getTavernPositions() const {
@@ -237,6 +354,7 @@ class AdvancedMapAdapter : public BaseGraphAdapter {
         }
 
         const std::vector<Tile>& _tileTypes;
+        const std::vector<Tile>& _avoidTypes;
 };
 
 
@@ -265,9 +383,10 @@ Path::PathType Path::getPath(const State& state, const Position& start, Tile til
 
 
 Path::PathType Path::getPath(const State& state, const Position& start, const std::vector<Tile>& tileTypes) {
+    std::vector<Tile> avoidTypes; // empty
     PathType result;
     Graph::AStar<State, Position, double> myAStar;
-    AdvancedMapAdapter myMapAdapter(state, tileTypes);
+    AdvancedMapAdapter myMapAdapter(state, tileTypes, avoidTypes);
     AdvancedMapAdapter::NodeAdapterType nodeStart(start);
 
     std::function<bool(const AdvancedMapAdapter::NodeAdapterType&)> endCondition = [&](const AdvancedMapAdapter::NodeAdapterType& currentNode) -> bool {
@@ -277,6 +396,32 @@ Path::PathType Path::getPath(const State& state, const Position& start, const st
         tileType = state.get_tile_from_background_border_check(currentNode.position);
         for(unsigned int i = 0; i < tileTypes.size(); ++i) {
             if(tileTypes[i] == tileType) {
+                isGoal = true;
+                break;
+            }
+        }
+
+        return isGoal;
+    };
+
+    result = myAStar.getPath(myMapAdapter, nodeStart, endCondition);
+
+    return result;
+}
+
+Path::PathType Path::getPath(const State& state, const Position& start, const std::vector<Tile>& goalTypes, const std::vector<Tile>& avoidTypes) {
+    PathType result;
+    Graph::AStar<State, Position, double> myAStar;
+    AdvancedMapAdapter myMapAdapter(state, goalTypes, avoidTypes);
+    AdvancedMapAdapter::NodeAdapterType nodeStart(start);
+
+    std::function<bool(const AdvancedMapAdapter::NodeAdapterType&)> endCondition = [&](const AdvancedMapAdapter::NodeAdapterType& currentNode) -> bool {
+        bool isGoal = false;
+        Tile tileType;
+
+        tileType = state.get_tile_from_background_border_check(currentNode.position);
+        for(unsigned int i = 0; i < goalTypes.size(); ++i) {
+            if(goalTypes[i] == tileType) {
                 isGoal = true;
                 break;
             }

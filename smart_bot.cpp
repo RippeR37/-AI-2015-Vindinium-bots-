@@ -33,19 +33,32 @@ Direction Bot::get_move(const Game& game) const
     int minesHold = game.state.heroes[_playerIndex].mine_positions.size();
 
     Path::PathType pathToMine;
-    Path::PathType pathToTavern = Path::getPath(game.state, playerPosition, Tile::TAVERN);
+    Path::PathType pathToTavern;
     Path::PathType pathToEnemy[4];
+    std::vector<Tile> goalTavern = { Tile::TAVERN };
+
+    // List enemies that are stronger then us (have more HP then we do)
+    // unless we want to fight specific hero, we should avoid stronger heroes then us
+    std::vector<Tile> strongerEnemies;
+    for(int i = 0; i < 4; ++i) {
+        if(i != _playerIndex) {
+            if(game.state.heroes[i].life > game.state.heroes[_playerIndex].life) {
+                strongerEnemies.push_back(getHeroFromIndex(i));
+            }
+        }
+    }
 
     // If player is wounded and have small number of health go to tavern to regain it (but be careful of enemies)
     // be advised, that if player's hp is smaller than 21 then he's best bet is to go to tavern
+    pathToTavern = Path::getPath(game.state, playerPosition, goalTavern, strongerEnemies);
     if((playerHP < std::min(50, 10 * minesHold)) ||
        (playerHP < 21 && minesHold > 0) ||
        (playerHP < 75 && pathToTavern.size() < 3 && pathToTavern.size() > 0))
     {
         if(pathToTavern.size() > 0) {
-            return Path::getDirection(playerPosition, pathToTavern.front());    /////////////// THIS SHOULD AVOID ENEMIES
+            return Path::getDirection(playerPosition, pathToTavern.front());
         } else {
-            return Direction::STAY;                                         /////////////////// TO BE CORRECTED!
+            return Direction::STAY; // we can't get to tavern
         }
     }
 
@@ -66,10 +79,15 @@ Direction Bot::get_move(const Game& game) const
             if(enemyHP < playerHP) {
                 // We do, so calculate if it's work for us
                 int currentEnemyCost = 0;
-                pathToEnemy[enemyIndex] = Path::getPath(game.state, playerPosition, getHeroFromIndex(enemyIndex));
+                std::vector<Tile> enemyGoal = { getHeroFromIndex(enemyIndex) };
+                pathToEnemy[enemyIndex] = Path::getPath(game.state, playerPosition, enemyGoal, strongerEnemies);
 
                 if(pathToEnemy[enemyIndex].size() > 0) {
                     currentEnemyCost = (8 * enemyMinesHold * enemyMinesHold) / pathToEnemy[enemyIndex].size();
+
+                    if(enemyHP < playerHP - 20 && pathToEnemy[enemyIndex].size() < 3) {
+                        currentEnemyCost = currentEnemyCost + 500;
+                    }
 
                     if (currentEnemyCost > bestEnemyCost) {
                         bestEnemyCost = currentEnemyCost;
@@ -84,11 +102,11 @@ Direction Bot::get_move(const Game& game) const
     // Now let's see what is the distance to nearest mine -if it's short then it might be better for us to take it
     // instead of fighting
     int costForMine = -1;
-    pathToMine = Path::getPath(game.state, playerPosition, _otherMines);
+    pathToMine = Path::getPath(game.state, playerPosition, _otherMines, strongerEnemies);
     Direction directionToMine = Direction::STAY;
 
     if(pathToMine.size() > 0) {
-        costForMine = (20 - pathToMine.size()) * 8;
+        costForMine = (20 - pathToMine.size()) * 7;
         directionToMine = Path::getDirection(playerPosition, pathToMine.front());
     }
 

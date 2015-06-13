@@ -52,6 +52,9 @@ foreach(bot_header ${bot_headers})
         Strategy.cpp
         SimpleStrategy.cpp
         AggressiveStrategy.cpp
+        AggressiveStrategy2.cpp
+        MediumStrategy.cpp
+        SafeStrategy.cpp
         )
 
     set_target_properties(${bot_bin}

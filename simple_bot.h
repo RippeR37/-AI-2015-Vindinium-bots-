@@ -2,7 +2,6 @@
 
 #include "game.h"
 #include "SimpleStrategy.h"
-#include "AggressiveStrategy.h"
 
 struct Bot
 {
@@ -19,7 +18,7 @@ struct Bot
 
 private:
 
-    AggressiveStrategy _strategy;
+    SimpleStrategy _strategy;
 
 };
 

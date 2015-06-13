@@ -1,7 +1,7 @@
-#include "AggressiveStrategy.h"
+#include "MediumStrategy.h"
 #include "Path.h"
 
-AggressiveStrategy::AggressiveStrategy(const Game& game) : Strategy(game) {
+MediumStrategy::MediumStrategy(const Game& game) : Strategy(game) {
     Tile playerMine;
 
     switch(_heroNumber) {
@@ -27,23 +27,22 @@ AggressiveStrategy::AggressiveStrategy(const Game& game) : Strategy(game) {
     _tavern.push_back(TAVERN);
 }
 
-Direction AggressiveStrategy::getMove() {
-    std::vector<Tile> goal = _goal;
+Direction MediumStrategy::getMove() {
+    std::vector<Tile> avoid;
+    int health = _game.state.heroes[_heroNumber].life;
 
     for(int i=0; i<4; ++i) {
-        if(i != _heroNumber && _game.state.heroes[i].mine_positions.size() > 0) {
-            goal.push_back(getHeroFromIndex(i));
+        if(i != _heroNumber && _game.state.heroes[i].life > health) {
+            avoid.push_back(getHeroFromIndex(i));
         }
     }
 
-    Path::PathType path1 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, goal);
+    Path::PathType path1 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, _goal, avoid);
     Path::PathType path2 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, _tavern, _avoid);
-
-    int health = _game.state.heroes[_heroNumber].life;
 
     Path::PathType path;
 
-    if(health-(int)path1.size() < 20) {
+    if(health-(int)path1.size() < 40) {
         path = path2;
     } else {
         path = path1;
@@ -56,7 +55,7 @@ Direction AggressiveStrategy::getMove() {
     return Path::getDirection(_game.state.heroes[_heroNumber].position, path.front());
 }
 
-Tile AggressiveStrategy::getHeroFromIndex(int index) {
+Tile MediumStrategy::getHeroFromIndex(int index) {
     Tile result;
 
     switch(index) {

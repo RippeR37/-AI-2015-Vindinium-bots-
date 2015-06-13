@@ -9,5 +9,6 @@ class Strategy {
         virtual Direction getMove() = 0;
     protected:
         const Game& _game;
+        int _heroNumber;
 };
 

@@ -52,7 +52,7 @@ play_game(const Options& options, Rng& rng)
 
 #if defined(BOTUCT) || defined(BOTMULTI)
     Bot bot(game, options.uct_constant, options.max_mc_depth, rng);
-#elif defined(BOTRANDOM)
+#elif defined(BOTRANDOM) || defined(BOTLEARNING)
     Bot bot(game, rng);
 #else
     Bot bot(game);

@@ -1,7 +1,7 @@
-#include "AggressiveStrategy.h"
+#include "AggressiveStrategy2.h"
 #include "Path.h"
 
-AggressiveStrategy::AggressiveStrategy(const Game& game) : Strategy(game) {
+AggressiveStrategy2::AggressiveStrategy2(const Game& game) : Strategy(game) {
     Tile playerMine;
 
     switch(_heroNumber) {
@@ -27,23 +27,29 @@ AggressiveStrategy::AggressiveStrategy(const Game& game) : Strategy(game) {
     _tavern.push_back(TAVERN);
 }
 
-Direction AggressiveStrategy::getMove() {
+Direction AggressiveStrategy2::getMove() {
     std::vector<Tile> goal = _goal;
+    std::vector<Tile> avoid;
+    int health = _game.state.heroes[_heroNumber].life;
 
     for(int i=0; i<4; ++i) {
-        if(i != _heroNumber && _game.state.heroes[i].mine_positions.size() > 0) {
-            goal.push_back(getHeroFromIndex(i));
+        if(i != _heroNumber && _game.state.heroes[i].mine_positions.size() > 0 && _game.state.heroes[i].life < health) {
+            Path::PathType toHero = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, getHeroFromIndex(i));
+            Path::PathType heroToTavern = Path::getPath(_game.state, _game.state.heroes[i].position, TAVERN);
+            if(toHero.size() < heroToTavern.size()) {
+                goal.push_back(getHeroFromIndex(i));
+            }
+        } else if(i != _heroNumber && _game.state.heroes[i].life > health) {
+            avoid.push_back(getHeroFromIndex(i));
         }
     }
 
-    Path::PathType path1 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, goal);
+    Path::PathType path1 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, goal, avoid);
     Path::PathType path2 = Path::getPath(_game.state, _game.state.heroes[_heroNumber].position, _tavern, _avoid);
 
-    int health = _game.state.heroes[_heroNumber].life;
-
     Path::PathType path;
-
-    if(health-(int)path1.size() < 20) {
+    
+    if(health-(int)path1.size() < 30) {
         path = path2;
     } else {
         path = path1;
@@ -56,7 +62,7 @@ Direction AggressiveStrategy::getMove() {
     return Path::getDirection(_game.state.heroes[_heroNumber].position, path.front());
 }
 
-Tile AggressiveStrategy::getHeroFromIndex(int index) {
+Tile AggressiveStrategy2::getHeroFromIndex(int index) {
     Tile result;
 
     switch(index) {

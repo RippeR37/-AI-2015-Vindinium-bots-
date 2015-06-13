@@ -47,11 +47,23 @@ Direction Bot::get_move(const Game& game) const
             }
         }
     }
+    int minesCount = 0;
+    int mapSize = game.background_tiles.shape()[0];
+    for(int i = 0; i < mapSize; ++i) {
+        for(int j = 0; j < mapSize; ++j) {
+            Position position(i, j);
+            Tile t = game.state.get_tile_from_background(position);
+            if(t == MINE || t == MINE1 || t == MINE2 || t == MINE3 || t == MINE4) {
+                minesCount++;
+            }
+        }
+    }
+    double minesFactor = minesHold * 85 / minesCount;
 
     // If player is wounded and have small number of health go to tavern to regain it (but be careful of enemies)
     // be advised, that if player's hp is smaller than 21 then he's best bet is to go to tavern
     pathToTavern = Path::getPath(game.state, playerPosition, goalTavern, strongerEnemies);
-    if((playerHP < std::min(50, 10 * minesHold)) ||
+    if((playerHP < std::min(75.0, minesFactor * minesHold)) ||
        (playerHP < 21 && minesHold > 0) ||
        (playerHP < 75 && pathToTavern.size() < 3 && pathToTavern.size() > 0))
     {
@@ -83,9 +95,9 @@ Direction Bot::get_move(const Game& game) const
                 pathToEnemy[enemyIndex] = Path::getPath(game.state, playerPosition, enemyGoal, strongerEnemies);
 
                 if(pathToEnemy[enemyIndex].size() > 0) {
-                    currentEnemyCost = (8 * enemyMinesHold * enemyMinesHold) / pathToEnemy[enemyIndex].size();
+                    currentEnemyCost = (6 * enemyMinesHold * enemyMinesHold) / pathToEnemy[enemyIndex].size();
 
-                    if(enemyHP < playerHP - 20 && pathToEnemy[enemyIndex].size() < 3) {
+                    if(enemyHP < playerHP - 20 && pathToEnemy[enemyIndex].size() < 2 && enemyMinesHold > 1) {
                         currentEnemyCost = currentEnemyCost + 500;
                     }
 
@@ -106,7 +118,7 @@ Direction Bot::get_move(const Game& game) const
     Direction directionToMine = Direction::STAY;
 
     if(pathToMine.size() > 0) {
-        costForMine = (20 - pathToMine.size()) * 7;
+        costForMine = (20 - pathToMine.size()) * 8;
         directionToMine = Path::getDirection(playerPosition, pathToMine.front());
     }
 

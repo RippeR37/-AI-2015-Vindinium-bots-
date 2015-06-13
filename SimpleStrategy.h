@@ -9,6 +9,7 @@ class SimpleStrategy : public Strategy {
         SimpleStrategy(const Game& game);
         Direction getMove();
     private:
+        bool _scheduledUpdate;
         void _newGoal();
         std::vector<Tile> _goal;
 };

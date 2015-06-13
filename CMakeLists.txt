@@ -51,6 +51,7 @@ foreach(bot_header ${bot_headers})
         Path.cpp
         Strategy.cpp
         SimpleStrategy.cpp
+        AggressiveStrategy.cpp
         )
 
     set_target_properties(${bot_bin}

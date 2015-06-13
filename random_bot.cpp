@@ -1,7 +1,7 @@
 #include "random_bot.h"
 
 Bot::Bot(const Game& game, Rng& rng) :
-    rng(rng), strategy(game)
+    rng(rng)
 {
 }
 
@@ -15,8 +15,7 @@ Bot::get_move(const Game& game) const
 {
     typedef UniformRng<uint8_t> UniformRngUInt8;
     UniformRngUInt8 uniform(rng, 5);
-    //return static_cast<Direction>(uniform());
-    return strategy.getMove();
+    return static_cast<Direction>(uniform());
 }
 
 void

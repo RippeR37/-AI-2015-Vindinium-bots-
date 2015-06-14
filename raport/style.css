@@ -1,0 +1,37 @@
+body {
+    width: 600px;
+}
+
+p {
+    text-align: justify;
+    text-indent: 20px;
+    margin-bottom: 0px;
+    margin-top: 5px;
+}
+
+div {
+    text-align: left;
+}
+
+.header {
+    text-align: center;
+}
+
+.separator hr {
+    border: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+.textseparator hr {
+    border-top: dashed 1px;
+}
+
+.textitalic {
+    font-style: italic;
+}
+
+img {
+    width: 100%;
+}
+

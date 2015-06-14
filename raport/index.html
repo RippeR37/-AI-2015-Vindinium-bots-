@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Projekt "Vindinium" - Raport"</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div class="header">
+            <h1>Projekt "Vindinium"</h1>
+            <h2>Autorzy: Damian Dyńdo, Mikołaj Nowak</h2>
+            <h2>Wrocław, 14.06.2015</h2>
+            <p>Niniejszy dokument jest raportem z projektu wykonanego na zaliczenie przedmiotu Sztuczna Inteligencja.</p>
+        </div>
+        <div class="separator">
+            <hr>
+        </div>
+        <div class="header">
+            <h1>Project "Vindinium"</h1>
+            <h2>Authors: Damian Dyńdo, Mikołaj Nowak</h2>
+            <h2>Wrocław, 14.06.2015</h2>
+            <p>The project described in this report has been completed to fulfill the requirements for the course: Artificial Intelligence.</p>
+        </div>
+        <div class="separator">
+            <hr>
+        </div>
+        <div class="text">
+            <p>Streszczenie w j. angielskim</p>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Wstęp</h3>
+            <p>Vindinium  to  gra  dla  miłośników  programowania sztucznej inteligencji.  Przy
+            użyciu  wybranego  języka programowania  można  kontrolować swoją postać.  Przez
+            określoną liczbę tur rywalizuje się z innymi AI. Rozgrywkę wygrywa postać, która
+            zgromadzi najwięcej złota.</p>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Zasady gry</h3>
+            <p>Vindinium jest grą turową dla wielu graczy. Rywalizują one na małej mapie, na której znajdują się kopalnie, tawerny i przeszkody. Celem gry jest zgromadzenie jak największej ilości złota po 1200 turach. W każdej turze można się przemieścić na sąsiadujące pole. Żeby zdobyć złoto, trzeba kontrolować kopalnie. Im więcej kopalni, tym większy przychód złota na turę. Można atakować i przejmować kopalnie innych graczy.</p>
+            <p>Można też atakować innych graczy. Zwycięzca pojedynku przejmuje wszystkie kopalnie przegranego. Przegrany wraca do swojej pozycji początkowej z pełnym życiem i zachowuje zgromadzone dotychczas złoto.</p>
+            <p>Każdy gracz w swojej turze traci jeden punkt życia. Nie można jednak w ten sposób zginąć. Gdy zostaje 1 punkt życia, gracz przestaje je tracić.</p>
+            <p>Punkty życia można odnawiać w tawernie w zamian za złoto.</p>
+            <p>Wygrywa gracz, który zgromadzi najwięcej złota na koniec gry. Dokładny opis zasad (w języku angielskim) można znaleźć tutaj: <a href="http://vindinium.org/doc">http://vindinium.org/doc</a>.</p>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Analiza gry pod kątem pisania SI</h3>
+            <h4>Strategie dla gracza</h4>
+            <ol>
+                <li><p>Naszym pierwszym spostrzeżeniem o grze powinien być fakt, że nie jest ona uczciwa - boty odpalane są bowiem na własnej maszynie, zatem im więcej rdzeni wyżej taktowanych, tym więcej obliczeń jesteśmy zdolni wykonać w sekundę, którą mamy na każdy ruch. Zatem opłaca się profilować swojego bota na najlepszym dostępnym sprzęcie i tak podkręcić jego ustawienia, by mieścił się jak najdokładniej w całej danej nam sekundzie. Pamiętać natomiast należy, że mapy generowane są losowo i należy:</p>
+                <ul>
+                    <li><p>profilować AI na największej dostępnej mapie, albo</p></li>
+                    <li><p>dynamicznie dostosować parametry by nie wypaść poza dostępny limit czasu.</p></li>
+                </ul></li>
+                <li><p>Gra pozwala na uruchomienie wielu tych samych lub różnych botów na jedną potyczkę. Zatem najlepszą strategią będzie stworzenie kilku botów, które będą ze sobą współpracować. Współpraca taka polegała by na przejmowaniu kopalni i “podkładaniu się” pod bota, który ma za cel wygrać. Grając również większą liczbą graczy niż dwoma w łatwy sposób można odizolować i zablokować przeciwników mających wiele kopalni. Grajac w pojedynkę często zauważymy, że gonitwa lepszych botów nie ma sensu, gdyż te prawie zawsze będą w stanie uciec przed nami do tawerny i zregenerować poziom życia tak, byśmy nie stanowili dla nich przeszkody w zabiciu nas.</p><p>Jeśli zależy nam na statystykach, możemy równie dobrze wykorzystać jednego bota głównego, który te statystyki "nabija" oraz dowolną ilość botów pomocniczych, które za zadanie mają przejąć jak najwięcej kopalni a później podłożyć się byśmy je zabili głównym botem, przejmując nowe.</p></li>
+            </ol>
+            <h4>Strategie dla pojedynczego bota</h4>
+            <ol>
+                <li>
+                    <strong>Istotne cele</strong>
+                    <p>Analizując grę możemy łatwo dość do wniosku, iż w grze mamy tak naprawdę tylko trzy typy obiektów, które są istotne z punktu widzenia celu bota:</p>
+                    <ul>
+                        <li>tawernę</li>
+                        <li>kopalnię (pustą lub przeciwnika)</li>
+                        <li>przeciwnika</li>
+                    </ul>
+                    <p>Poniżej omówię każdy z typów obiektów i strategię kiedy warto dany obiekt uwzględnić jako aktualny cel wędrówki naszego bota. Istotne jest zauważenie również, że w większości ruchów, ruch pozostania w miejscu jest nie-optymalny, gdyż podczas naszego pobytu w danym miejscu przeciwnicy mogą zdobywać nowe kopalnie, zwiększając tym samym przewagę nad nami, a także mogą zbliżyć się do nas - jeśli posiadamy przewagę w punktach życia możemy sami go zaatakować (+/- jeden ruch, w zależności od parzystości długości ścieżki między nami a przeciwnikiem) lub uciec, jeśli przegramy.</p>
+                </li>
+                <li>
+                    <strong>Tawerna ("medyk")</strong>
+                    <p>Obiekt ten powinniśmy odwiedzać tym częściej im więcej mamy w posiadaniu aktualnie kopalni, a w naszym pobliżu są przeciwnicy. Odnowienie życia o 50pkt kosztuje zaledwie dwie złote monety, czyli czyli połowę tego, co zdobędziemy z 1 kopalni od poprzedniego do następnego ruchu. Mając zatem jedną kopalnie i tracąc jeden ruch na odnowienie życia i tak wychodzimy do przodu. Warto jednak zauważyć, że zdecydowanie nie opłaca się ginąć z ręki przeciwnika mając sporo kopalni, gdyż automatycznie przejmie je nasz przeciwnik i będzie w stanie szybko odrobić straty.</p><p>Ważne jest też wyważenie kiedy powinniśmy zmienić cel z aktualnego na tawernę. Jeśli posiadamy mniej niż 20 pkt życia to nie jesteśmy w stanie nikogo zaatakować i wygrać, zatem opłaca się wtedy powędrować do tawerny i odnowić życie, by móc kontynuować przejmowanie kopalni i nie stracić aktualnie posiadanych. Co ważne - będąc już przy tawernie, zdecydowanie opłaca się skorzystać z niej dwukrotnie (o ile 1 odnowienie życia nie odnowi nam go do prawie pełnej postaci) gdyż nie tracimy wtedy wielu kolejek i cennych ruchów na dotarcie do niej drugim razem. Z testów jakie przeprowadziliśmy wynika jasno, że jest to zdecydowanie polecane zagranie (podwójne odnowienie życia). Warto zauważyć, że przeciwnicy, którzy okazywali się lepsi od naszych botów również korzystali z tawerny w ten sposób. Istnieje jednak rozwiązanie alternatywne, które w pewnych przypadkach sprawdza się lepiej, niż wizyta w tawernie - zostanie ono opisane w częsci 5 - tricki.</p>
+                </li>
+                <li>
+                    <strong>Kopalnia ("złoto")</strong>
+                    <p>Kopalnie opłaca się przejmować wtedy, kiedy nie opłaca nam się wędrować w kierunku tawerny (czyli mamy dużo życia lub nie ma przeciwników w naszym otoczeniu i jesteśmy jeszcze zdolni do przejmowania kopalń) i w kierunku naszych przeciwników (gdy np. nie damy im rady). W przejmowaniu kopalni dobrze sprawdza się strategia przejęcia wszystkich kopalni bliskich naszemu punktowi respawnu, gdyż w razie nieprzewidzianej śmierci łatwo i szybko możemy je zazwyczaj odzyskać nie dając tym samym przeciwnikowi szansy, by szybko się wzbogacił.</p><p>Jeśli chodzi również o wybór kopalni pustej od kopalni przeciwnika, lub kopalni dwóch różnych przeciwników, to powinniśmy przejmować kopalnie te, które mają wokół siebie więcej kopalni oraz te, które należą do lepszego przeciwnika. W ten sposób blokujemy naszego mocniejszego wroga, zamiast tracić ruchy na słabszych przeciwników, którzy i tak nam nie zagrażają. Gdy nie ma w naszym pobliżu kopalń zajętych warto przejąć pustą kopalnię i możliwe że zbliżyć się do jakichś zajętych.</p><p>Jeszcze lepszym sposobem byłoby planowanie ścieżki tak, by w danej ilości kroków przejąć jak największą ilość kopalń. Ominęli byśmy tym sposobem samotne kopalnie, które w danej chwili mogą być położone bliżej nas niż inne, ale pozostałe są zgrupowane blisko siebie.</p>
+                </li>
+                <li>
+                    <strong>Przeciwnicy</strong>
+                    <p>W kierunku przeciwników powinniśmy udać się tylko wtedy, gdy spełniamy następujące wymagania:</p>
+                    <p class="textitalic">Niech hp(gracz) oznacza poziom życia gracza, a hpL(gracz) oznacza wartość floor(hp(gracz) / 20) - tzn ile pełnych "dwudziestek" znajduje się w życiu danego gracza.</p>
+                    <ul>
+                        <li>hpL(my) &gt;= hpL(przeciwnik) oraz między nami a przeciwnikiem znajduje się nieparzysta ilość kroków, lub</li>
+                        <li>hpL(my) &gt; hpL(przeciwnik)</li>
+                    </ul>
+                    <p>Pierwszy fakt wynika z tego, że pierwsi zaatakujemy naszego przeciwnika, zatem to my pierwsi zaatakujemy go i tym samym pierwszy zginie on. Trzeba również uważać na to jaki dystans dzieli nas od przeciwnika, może zdarzyć się bowiem sytuacja, że nim dojdziemy do przeciwnika, wartość hpL(my) zmniejszy się, a hpL(przeciwnik) nie (np. mając 43 pkt życia po wykonaniu 4 ruchów możemy spaść nasza wartość hpL, zaś przeciwnik mógł mieć 47 pkt życia i jego pozostanie bez zmian. W takim przypadku nie wartko atakować, gdyż przegramy.</p><p>Nie warto również atakować przeciwników, którzy nie posiadają żadnych kopalni, lub znikomą ilość względem naszej ilości.</p><p>Jeśli chodzi o unikanie/uciekanie od przeciwników, to należy je wykonać, pomijając inne cele, gdy:</p>
+                    <ul>
+                        <li>posiadamy bardzo mało życia, jakieś kopalnie, a w naszym bliskim sąsiedztwie znajdują się przeciwnicy (należy unikać przeciwników)</li>
+                        <li>atakuje/goni nas gracz (znajduje się w odległości 2 pól od nas) a my nie posiadamy wystarczająco dużo życia by z nim wygrać, posiadając jednocześnie jakieś kopalnie.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Tricki</strong>
+                    <ul>
+                        <li>
+                            <strong>Bezstratna ucieczka</strong>
+                            <p>Załóżmy, że goni nas przeciwnik, a my posiadamy kilka kopalń, jednak nie mamy szans z nim w starciu. Moglibyśmy próbować naszych sił w ucieczce, ale istnieje - czasami - lepszy sposób: jeśli mamy mało życia (&lt;= 20pkt) możemy wykonać atak na dowolną kopalnię. W ten sposób giniemy i odradzamy się w naszym pkt odrodzenia z pełną ilością życia bez starty żadnej kopalni.</p><p>Dodatkowym atutem tego tricku może być również sprawdzenie, czy pobliskie kopalnie są nasze czy wroga - jeśli nasze, możemy próbować przedostać się do tawerny by tam w łatwy sposób wygrać potyczkę z przeciwnikiem (lub przynajmniej uzyskać “remis”), jeśli jednak któreś kopalnie tam nie są zajęte lub są zajęte przez wroga, warto wykorzystać ten sposób jako darmowy "teleport" i odnowienie życia.</p>
+                        </li>
+                        <li>
+                            <strong>Spawn-kill</strong>
+                            <p>Trick jest bardzo podobny do poprzedniego. Na mapach na których tawerny są tuż obok spawn-pointów, widząc że któryś przeciwnik mający mało życia udaje się w jej kierunku, możemy z małą ilością życia przyczaić się przy obcej/niezajętej kopalni i czekać aż przeciwnik wejdzie na nasz spawn-point by odnowić życie. W tym momencie my atakujemy kopalnię, umierając i spawnując się w naszym spawn-poincie. Zgodnie z zasadami gry, przeciwnik znajdujący się w naszym spawn-poincie ginie, a my przejmujemy jego kopalnie za darmo, odnawiając przy okazji życie do pełna. Taką strategię zauważyliśmy u gracza <strong>Mini-Me</strong> w kilku przypadkach, gdzie pozwoliła mu szybko przejąć większość kopalni na mapie i powrócić z podium na 1 miejsce w krótkim czasie. Strategia ta prawie za każdym razem skutkowała zmianą wyniku gry i wygraną jej twórcy. Aby bronić się przed nią, nie należy wchodzić na spawn-point przeciwnika, jeśli ten posiada mniej lub 20 pkt życia i znajduje się przy obiekcie, który może go zabić. Niestety czasami tawerny generowane są w taki sposób, że tylko na takim polu możemy odnowić życie - wtedy czasami warto przeczekać przeciwnika korzystając z ruchu STAY.</p>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Wyszukiwanie ścieżki</h3>
+            <p>Wyszukiwanie najkrótszej ścieżki to - w zależności od gry - często jeden z ważniejszych podstawowych bloków modułu sztucznej inteligencji. Praktycznie w każdym zastosowaniu potrzebujemy, aby operacja ta była bardzo szybka, gdyż często musimy wyznaczyć wiele najkrótszych ścieżek do różnych obiektów i porównać ich odległości i inne parametry.</p><p>Istnieje wiele algorytmów do wyznaczania najkrótszych ścieżek - jedne wyznaczają je między dwoma punktami w świecie (wierzchołkami w grafie), a inne pozwalają na np. wyznaczenie najkrótszej ścieżki pozwalającej na odwiedzenie danego zbioru punktów (problem komiwojażera).</p><p>Poniżej omówię kilka najciekawszych i najczęściej wykorzystywanych algorytmów do wyszukiwania ścieżki w budowie modułów sztucznej inteligencji do gier:</p>
+            <ul>
+                <li>
+                    <strong>Algorytm A*</strong>
+                    <p>Heurystyczny algorytm pozwalający - w oryginalnej wersji - na znalezienie najkrótszej ścieżki między dwoma wierzchołkami grafu. Główną ideą algorytmu jest utrzymywanie zbioru wierzchołków, które możemy odwiedzić z już odwiedzonych wierzchołków (początkowo z wierzchołka startowego) i przypisanie im najmniejszej wartości funkcji kosztu:<br>
+                    <span class="textitalic">f(node) = g(node) + h(node)</span>, gdzie:<br>
+                    <span class="textitalic">f(node)</span> oznacza pełną wartość funkcji kosztu dla wierzchołka node,<br>
+                    <span class="textitalic">g(node)</span> - funkcja opisująca rzeczywistą najkrótszą odległość między wierzchołkiem node, a wierzchołkiem początkowym,<br>
+                    <span class="textitalic">h(node)</span> - funkcja heurystyczna opisująca szacowaną odległość między wierzchołkiem node, a wierzchołkiem końcowym. W grach, w których gracz porusza się na mapach 2 lub 3 wymiarowych najczęstszą funkcją heurystyczną jest odległość euklidesowa między dwoma punktami w przestrzeni. W grach 2D czasami stosuje się również odległość manhattańską, jeśli gracz może poruszać się tylko wzdłuż osi.</p><p>Następnie w każdym kroku wybieramy ze zbioru nie odwiedzony jeszcze wierzchołek, który posiada najmniejszy heurystyczny koszt i dodajemy jego nie odwiedzonych sąsiadów do naszego zbioru. Algorytm kończy swoje działanie, gdy znajdziemy się w wierzchołku końcowym (wtedy znaleźliśmy ścieżkę) lub gdy zbiór możliwych do odwiedzenia sąsiadów będzie pusty (wtedy takowej ścieżki nie ma w ogóle).</p><p>Algorytm ten jest szeroko stosowany ze względu na swoją wydajność, łatwość w rozbudowie o bardziej skomplikowane cele oraz wiele zoptymalizowanych wersji (np. algorytm <strong>Jump point search</strong> wywodzący się od A*, który w pewnych warunkach potrafi znacząco przyśpieszyć wyszukiwanie ścieżki).</p><p>Algorytm ten został wybrany przez nas ze względu na wydajnośc oraz możliwość rozbudowania go poprzeez modyfikację np. funkcji opisującej heurystyczny koszt dotarcia do celu. Pozwoliło to nam uzyskać algorytm, który potrafi znaleźć:</p>
+                    <ul>
+                        <li>najkrótszą ścieżkę z punktu <span class="textitalic">A</span> do <span class="textitalic">B</span></li>
+                        <li>najkrótszą ścieżkę z punktu <span class="textitalic">A</span> do dowolnego elementu typów <span class="textitalic">B1, …, Bn</span></li>
+                        <li>najkrótszą ścieżkę z punktu <span class="textitalic">A</span> do dowolnego elementu typów <span class="textitalic">B1, …, Bn</span> omijając na zadaną odległość wszystkie elementy typów <span class="textitalic">C1, …, Ck</span>.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Algorytm Floyda-Warshalla lub algorytm Johnsona</strong>
+                    <p>Algorytmy te pozwalają na wyznaczenie najkrótszych ścieżek między wszystkimi parami wierzchołków w grafie. Stosowane są często w fazie pre-processingu, by podczas prawdziwej rozgrywki nie tracić czasu na wyszukiwanie ścieżki za każdym razem. Niestety w naszym projekcie algorytmy nie mógły zostać wykorzystane ze względu na zmieniające się warunki na gry - trasa bowiem może zostać zablokowana przez przeciwnika na wąskich mapach. Możemy również chcieć uniknąć przeciwnika idąc do naszego celu, czego te algorytm same w sobie nam nie pozwolą osiągnąć.</p>
+                </li>
+                <li>
+                    <strong>Własny algorytm</strong>
+                    <p>Własny algorytm pozwalający na wyznaczenie ścieżki, która w przeciągu <span class="textitalic">n</span> następnych kroków pozwoli na odwiedzenie największej liczby wierzchołków danego typu.</p><p>Algorytm ten mógłby zostać użyty do wyznaczania ścieżki do przejęcia największej liczby kopalń w zadanej ilości ruchów. Przypuścimy hipotetycznie sytuację, że na lewo od naszego bohatera mamy jedna kopalnię oddaloną o 4 pola, a na prawo od naszego bohatera mamy trzy kopalnie oddalone o 5, 6 i 6 pól. Algorytm A* (i inne podobne) wybierze w tym wypadku kopalnię na lewo, gdyż jest bliższa. Czasami jednak bardziej opłacało by się wybrać ścieżkę do kopalni na prawo, gdyż w 9 ruchów potrafimy przejąć wszystkie 3 kopalnie, zaś w 9 ruchów idąc do kopalnie na lewo zdążymy przejąć jedną i wrócić na początkowe miejsce.</p>
+                </li>
+            </ul>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Boty</h3>
+            <ol>
+                <li>
+                    <p>Prosty wykorzystujący najprostszą strategię "iść w kierunku kopalń" (bez żadnych specjalnych algorytmów):<br>
+                    Bot, wykorzystując algorytm A*, znajduje ścieżkę do najbliższej kopalni lub tawerny (jeśli ma mało życia). Nie zmienia celu dopóki go nie osiągnie (nie zmieni celu na tawernę nawet jeśli straci dużo życia próbując dojść do kopalni, cel zmieni się dopiero po dojściu do kopalni). Całkowicie ignoruje innych graczy. Mimo to, udało mu się raz wygrać (bot żółty, <a href="http://vindinium.org/as0b0y6c">http://vindinium.org/as0b0y6c</a>).</p>
+                </li>
+                <li>
+                    <p>Bardziej skomplikowany - wykorzystujący strategię dobraną ręcznie po dogłębnej analizie gry i innych botów. Jego działanie opiera się w dużej mierze na tym, co przedstawione zostało w rozdziale analizy gry.</p>
+                </li>
+                <li>
+                    <p>Najbardziej skomplikowany - wykorzystujący algorytmy uczenia się przez wzmocnienie:<br>
+                    Bot wykorzystuje kilka strategii podobnych do tej wykorzystywanej przez bota 1. Tym razem strategie reagują na zmianę życia, jeśli spadnie poniżej pewnego poziomu (różny w zależności od strategii) to cel zmienia się na tawernę. Strategie te różnią się agresywnością, najbardziej agresywna atakuje kopalnie i wszystkich graczy, którzy mają jakieś kopalnie, a do tawerny udaje się dopiero, gdy życie spadnie poniżej 20. Najmniej agresywna atakuje tylko kopalnie, stara się omijać innych graczy, a do tawerny udaje się, gdy życie spadnie poniżej 50.</p><p>Strategie wybierane są przez losowanie z priorytetami. Istotny przy wyborze strategii jest też aktualny poziom życia bota, priorytety są różne w każdym przedziale <span class="textitalic">[10i+1, 10i+10]</span> dla <span class="textitalic">i = 0,1,...,9</span>.</p><p>Strategia jest wybierana na 10 ruchów. Na koniec, przed wyborem kolejnej, zmieniany jest priorytet dotychczas wykorzystywanej strategii. Oceniana jest jej skuteczność. Kryterium oceny jest różnica w ilości kopalni na początku i na końcu stosowania strategii. Wynik (może być ujemny) jest dodawany do dotychczasowego priorytetu. Jeśli priorytet spadnie poniżej 1, zwiększane są priorytety wszystkich strategii, tak aby wszystkie wynosiły co najmniej 1.</p><p>Bot zapamiętuje priorytety (w pliku tekstowym) i wykorzystuje je w kolejnych walkach.</p><p>Bot korzysta z czterech strategii, każda o innym poziomie agresywności. Wykres zależności preferowanej agresywności od poziomu życia (4 - najbardziej agresywna, 1 - najmniej agresywna):</p>
+                    <img src="images/wykres.png" alt="wykres">
+                    <p>Nie dziwi fakt, że mając dużo życia, bot decyduje się na bardziej agresywne ruchy, gdyż szansa na porażkę jest mniejsza.</p>
+                </li>
+            </ol>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Testy</h3>
+            <p>Każdy z botów był uruchamiany najpierw na serwerze treningowym, gdzie rywalizował z przeciwnikami wykonującymi losowe ruchy, a następnie na głównym serwerze gry, gdzie rywalizował z pozostałymi dwoma botami, a także z botami stworzonymi przez innych graczy.</p><p>Boty 2 i 3 były uruchamiane na oddzielnych kontach, bot 1 działał na tym samym koncie, co początkowe testy bota 3. Konta te to:</p>
+            <ul>
+                <li>Bot 2: <strong>RippeR37</strong> (<a href="http://vindinium.org/ai/95p6ziyi">http://vindinium.org/ai/95p6ziyi</a>),</li>
+                <li>Bot 3: <strong>Ivan1pl</strong> (<a href="http://vindinium.org/ai/lpu3g1sy">http://vindinium.org/ai/lpu3g1sy</a>),</li>
+                <li>Dodatkowe konta testowe: <strong>RippeR37test</strong>, <strong>qweasdzxc</strong> (<a href="http://vindinium.org/ai/9cq7e2e8">http://vindinium.org/ai/9cq7e2e8</a>).</li>
+            </ul>
+            <p>Dwa pierwsze konta uzyskały dość wysoki (biorąc pod uwagę krótki czas testów) wynik w punktacji elo stosowanej w Vindinium. Każdemu z nich udawało się wygrywać z dwoma regularnie grajacymi botami innych graczy: prawie zawsze udawało się wygrać z <strong>kormander</strong>, czasem także z <strong>Mini-Me</strong>, który wykorzystuje algorytm min-max z heurystycznym ograniczeniem i jest prawdopodobnie najlepszym z obecnie działających botów.</p>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+        <div class="text">
+            <h3>Podsumowanie</h3>
+            <p>Boty #2 i #3 okazały się porównywalnie dobre. Oba dobrze radziły sobie w starciach z innymi botami. Szczególnie dobrze poradził sobie bot #2, który czasami wygrywał z dużo bardziej zaawansowanymi botami mimo swojej prostoty. Warto zauważyć, że bot ten mógłbym radzić sobie lepiej, gdyby spędzić więcej czasu na dopracowaniu poszczególnych wag przy wyborze jego celu. Pokazuje to, że nie zawsze warto stosować skomplikowane algorytmy, proste strategie mogą sobie radzić równie dobrze. Nie zadziwia, że najsłabiej wypadł bot #1, który miał najprostszą strategię i brak wykorzystania tricków.</p>
+        </div>
+        <div class="textseparator">
+            <hr>
+        </div>
+    </body>
+</html>

@@ -78,8 +78,10 @@ Bot::get_move(const Game& game)
         typedef UniformRng<uint32_t> UniformRngUInt32;
         UniformRngUInt32 uniform(_rng, priorsum);
         int uni = uniform();
+        int sum = 0;
         for(int i=0; i<4; ++i) {
-            if(uni < _strategy[i].second[(_beginLife-1)/10]) {
+            sum += _strategy[i].second[(_beginLife-1)/10];
+            if(uni < sum) {
                 _current = i;
                 break;
             }

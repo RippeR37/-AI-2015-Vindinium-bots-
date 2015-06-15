@@ -26,13 +26,34 @@
             <hr>
         </div>
         <div class="text">
-            <p>Streszczenie w j. angielskim</p>
+            <h3>Report summary (english)</h3>
+            <p>Our goal was to learn about and implement number of bots - from simple 
+            ones to more advanced - for online AI-contest game "Vindinium". These bots then
+            were to be tested with other bots and ranked by their scores.</p>
+            
+            <p>First part was research - we've studied a number of already-played games between
+            other players and analyzed their strategies. Second part was creating bots.</p>
+            
+            <p>First bot was meant to be simple and to help us familiarize with game. It used simple
+            strategy without any sophisticated means to dynamically evaluate game's state.
+            Second bot was created using our knowledge about game and what we've analyzed. Its goal
+            was to see how good can a bot be without using any advanced algorithms like neural
+            networks or machne learning techniques. Last bot used reinforcement learning to build stats and help choose best strategy for
+            given time. All of these bots used our own implementation of A* pathfinding
+            algorithm with couple improvements to allow us to "ask" more generic questions then
+            only "What is the shortest path between point A and point B".</p>
+            
+            <p>Our reasearch and implementation was conducted with many tests which gave the results that
+            our bots works pretty well (bots #2 and #3) against enemies. Another thing we had to
+            take on our account was that this game in times can be very unfair, which led sometimes to
+            win of one of worst bots.</p>
         </div>
-        <div class="textseparator">
+        <div class="separator">
             <hr>
         </div>
         <div class="text">
             <h3>Wstęp</h3>
+            <p>Celem projektu było zaimplementowanie kilku botów do gry Vindinium.</p>
             <p>Vindinium  to  gra  dla  miłośników  programowania sztucznej inteligencji.  Przy
             użyciu  wybranego  języka programowania  można  kontrolować swoją postać.  Przez
             określoną liczbę tur rywalizuje się z innymi AI. Rozgrywkę wygrywa postać, która
@@ -61,13 +82,13 @@
                     <li><p>profilować AI na największej dostępnej mapie, albo</p></li>
                     <li><p>dynamicznie dostosować parametry by nie wypaść poza dostępny limit czasu.</p></li>
                 </ul></li>
-                <li><p>Gra pozwala na uruchomienie wielu tych samych lub różnych botów na jedną potyczkę. Zatem najlepszą strategią będzie stworzenie kilku botów, które będą ze sobą współpracować. Współpraca taka polegała by na przejmowaniu kopalni i “podkładaniu się” pod bota, który ma za cel wygrać. Grając również większą liczbą graczy niż dwoma w łatwy sposób można odizolować i zablokować przeciwników mających wiele kopalni. Grajac w pojedynkę często zauważymy, że gonitwa lepszych botów nie ma sensu, gdyż te prawie zawsze będą w stanie uciec przed nami do tawerny i zregenerować poziom życia tak, byśmy nie stanowili dla nich przeszkody w zabiciu nas.</p><p>Jeśli zależy nam na statystykach, możemy równie dobrze wykorzystać jednego bota głównego, który te statystyki "nabija" oraz dowolną ilość botów pomocniczych, które za zadanie mają przejąć jak najwięcej kopalni a później podłożyć się byśmy je zabili głównym botem, przejmując nowe.</p></li>
+                <li><p>Gra pozwala na uruchomienie wielu tych samych lub różnych botów na jedną potyczkę. Zatem najlepszą strategią będzie stworzenie kilku botów, które będą ze sobą współpracować. Współpraca taka polegała by na przejmowaniu kopalni i “podkładaniu się” pod bota, który ma za cel wygrać. Grając również większą liczbą graczy niż dwoma w łatwy sposób można odizolować i zablokować przeciwników mających wiele kopalni. Grajac w pojedynkę często zauważymy, że gonitwa lepszych botów nie ma sensu, gdyż te prawie zawsze będą w stanie uciec przed nami do tawerny i zregenerować poziom życia tak, by byli w stanie wygrać z nami w potyczce.</p><p>Jeśli zależy nam na statystykach, możemy równie dobrze wykorzystać jednego bota głównego, który te statystyki "nabija" oraz dowolną ilość botów pomocniczych, które za zadanie mają przejąć jak najwięcej kopalni, a później podłożyć się byśmy je zabili głównym botem, przejmując nowe.</p></li>
             </ol>
             <h4>Strategie dla pojedynczego bota</h4>
             <ol>
                 <li>
                     <strong>Istotne cele</strong>
-                    <p>Analizując grę możemy łatwo dość do wniosku, iż w grze mamy tak naprawdę tylko trzy typy obiektów, które są istotne z punktu widzenia celu bota:</p>
+                    <p>Analizując grę możemy łatwo dość do wniosku, iż w grze mamy tak naprawdę tylko trzy typy obiektów, które są istotne z punktu widzenia bota:</p>
                     <ul>
                         <li>tawernę</li>
                         <li>kopalnię (pustą lub przeciwnika)</li>
@@ -181,7 +202,10 @@
         </div>
         <div class="text">
             <h3>Podsumowanie</h3>
-            <p>Boty #2 i #3 okazały się porównywalnie dobre. Oba dobrze radziły sobie w starciach z innymi botami. Szczególnie dobrze poradził sobie bot #2, który czasami wygrywał z dużo bardziej zaawansowanymi botami mimo swojej prostoty. Warto zauważyć, że bot ten mógłbym radzić sobie lepiej, gdyby spędzić więcej czasu na dopracowaniu poszczególnych wag przy wyborze jego celu. Pokazuje to, że nie zawsze warto stosować skomplikowane algorytmy, proste strategie mogą sobie radzić równie dobrze. Nie zadziwia, że najsłabiej wypadł bot #1, który miał najprostszą strategię i brak wykorzystania tricków.</p>
+            <p>Boty #2 i #3 okazały się porównywalnie dobre. Oba dobrze radziły sobie w starciach z innymi botami. Szczególnie dobrze poradził sobie bot #2, który czasami wygrywał z dużo bardziej zaawansowanymi botami mimo swojej prostoty. Warto zauważyć, że bot ten mógłbym radzić sobie lepiej, gdyby spędzić więcej czasu na dopracowaniu poszczególnych wag przy wyborze jego celu. Pokazuje to, że nie zawsze warto stosować skomplikowane algorytmy, proste strategie mogą sobie radzić równie dobrze. czasem może być lepiej (lub przynajmniej dostatecznie dobrze)
+            przeanalizować grę i stworzyć ręcznie do niej bota, zamiast korzystać ze skomplikowanych
+            algorytmów, które mogłyby stworzyć lepszego bota, ale są nieporównywalnie cięższe
+            i bardziej wymagające pod względem zasobów. Nie zadziwia, że najsłabiej wypadł bot #1, który miał najprostszą strategię i brak wykorzystania tricków.</p>
         </div>
         <div class="textseparator">
             <hr>

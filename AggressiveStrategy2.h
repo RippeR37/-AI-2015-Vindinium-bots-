@@ -1,3 +1,9 @@
+/**
+ * Authors:
+ * Damian Dyńdo
+ * Mikołaj Nowak
+*/
+
 #pragma once
 
 #include <vector>

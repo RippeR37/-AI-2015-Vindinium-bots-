@@ -1,3 +1,9 @@
+/**
+ * Authors:
+ * Damian Dyńdo
+ * Mikołaj Nowak
+*/
+
 #include "learning_bot.h"
 #include "AggressiveStrategy.h"
 #include "AggressiveStrategy2.h"

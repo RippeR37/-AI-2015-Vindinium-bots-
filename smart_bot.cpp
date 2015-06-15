@@ -1,3 +1,9 @@
+/**
+ * Authors:
+ * Damian Dyńdo
+ * Mikołaj Nowak
+*/
+
 #include "smart_bot.h"
 #include "utils.h"
 #include "Path.h"

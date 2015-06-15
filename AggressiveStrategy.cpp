@@ -1,3 +1,10 @@
+/**
+ * Authors:
+ *
+ * Damian Dyñdo
+ * Miko³aj Nowak
+ */
+
 #include "AggressiveStrategy.h"
 #include "Path.h"
 

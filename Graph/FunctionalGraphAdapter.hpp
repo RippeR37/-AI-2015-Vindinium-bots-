@@ -1,3 +1,9 @@
+/**
+ * Authors:
+ * Damian Dyńdo
+ * Mikołaj Nowak
+*/
+
 #ifndef GRAPH_FUNCTIONALGRAPHADAPTER_HPP_INCLUDED
 #define GRAPH_FUNCTIONALGRAPHADAPTER_HPP_INCLUDED
 

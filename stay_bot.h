@@ -1,3 +1,9 @@
+/**
+ * Authors:
+ * Damian Dyńdo
+ * Mikołaj
+*/
+
 #pragma once
 
 #include "game.h"

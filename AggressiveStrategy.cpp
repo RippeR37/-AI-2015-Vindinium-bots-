@@ -1,8 +1,8 @@
 /**
  * Authors:
  *
- * Damian DyÒdo
- * Miko≥aj Nowak
+ * Damian Dy≈Ñdo
+ * Miko≈Çaj Nowak
  */
 
 #include "AggressiveStrategy.h"
